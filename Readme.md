@@ -59,7 +59,7 @@ DSS/
 
 1. Clona el repositorio:
    ```sh
-   git clone <url-del-repo>
+   git clone https://github.com/F3rnandoVil/DSS
    cd DSS
    ```
 

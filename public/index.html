@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Generador de Contraseñas</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon-96x962.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon2.svg" />
+  <link rel="shortcut icon" href="/assets/favicon2.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon2.png" />
+  <link rel="manifest" href="/assets/site.webmanifest" />
+  <style>
+    body { font-family:sans-serif; max-width:950px; margin:2rem auto; }
+    button { margin-left:.5rem; }
+    textarea { width:100%; height:3rem; font-size:1rem; }
+    ul { padding-left:1rem; }
+    code { user-select:all; }
+    li { margin:.3rem 0; }
+    #label { width:100%; }
+  </style>
+
+</head>
+<body>
+  <h1>🔐 Generador de Contraseñas</h1>
+
+  <label>Longitud:
+    <input type="number" id="length" value="16" min="4" max="64">
+  </label>
+  <br><br>
+
+  <input type="text" id="label" placeholder="Nombre (opcional)" />
+  <br><br>
+
+  <button id="gen">Generar</button>
+  <button id="save" disabled>Guardar en historial</button>
+
+  <br><br>
+  <textarea id="pwd" readonly></textarea>
+
+  <h2>Historial</h2>
+  <ul id="hist"></ul>
+
+  <script>
+    const genBtn  = document.getElementById('gen');
+    const saveBtn = document.getElementById('save');
+    const pwdArea = document.getElementById('pwd');
+    const hist    = document.getElementById('hist');
+    const labelIn = document.getElementById('label');
+
+    const fmtDate = iso => new Date(iso).toLocaleString();
+
+    window.addEventListener('DOMContentLoaded', loadHist);
+
+    async function loadHist(){
+      const res  = await fetch('/api/passwords');
+      const list = await res.json();
+    hist.innerHTML = list.map(item => `<li data-id="${item.id}">
+      <div class="info">
+        <div class="date">${new Date(item.createdAt).toLocaleString()}</div>
+        <div class="label lbl">${item.label || "(Sin nombre)"}</div>
+        <div class="pwd">${item.password}</div>
+      </div>
+      <div class="actions">
+        <button class="edit">✏️</button>
+        <button class="del">🗑️</button>
+      </div>
+    </li>`).join('');
+    }
+
+    genBtn.onclick = async () =>{
+      const len = +document.getElementById('length').value || 16;
+      const { password } = await (await fetch(`/api/generate?length=${len}`)).json();
+      pwdArea.value     = password;
+      saveBtn.disabled  = false;
+    };
+
+    saveBtn.onclick = async () =>{
+      await fetch('/api/passwords', {
+        method : 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body   : JSON.stringify({
+          password: pwdArea.value,
+          label   : labelIn.value.trim()
+        })
+      });
+      pwdArea.value    = '';
+      labelIn.value    = '';
+      saveBtn.disabled = true;
+      await loadHist();
+    };
+
+    // Eliminar o editar
+    hist.onclick = async e =>{
+      const li  = e.target.closest('li');
+      if(!li) return;
+      const id  = li.dataset.id;
+
+      // Borrar
+      if(e.target.classList.contains('del')){
+        if(!confirm('¿Eliminar esta contraseña?')) return;
+        await fetch(`/api/passwords/${id}`,{ method:'DELETE' });
+        li.remove();
+        return;
+      }
+
+      // Editar
+      if(e.target.classList.contains('edit')){
+        const curLabel = li.querySelector('.lbl').textContent.replace(/^\(Sin nombre\)$/, '');
+        const curPwd   = li.querySelector('.pwd').textContent;
+
+        const newLabel = prompt('Nuevo nombre:', curLabel);
+        if(newLabel === null) return;
+
+        const newPwd   = prompt('Nueva contraseña:', curPwd);
+        if(newPwd === null) return;
+
+        await fetch(`/api/passwords/${id}`,{
+          method : 'PUT',
+          headers: { 'Content-Type':'application/json' },
+          body   : JSON.stringify({ password:newPwd, label:newLabel.trim() })
+        });
+        await loadHist();
+      }
+    };
+  </script>
+</body>
+</html>

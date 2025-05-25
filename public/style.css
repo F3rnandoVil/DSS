@@ -1,0 +1,134 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Estilo general */
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: #f4f6f9;
+  color: #333;
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  background-color: #ffffff;
+}
+
+/* Títulos */
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* Inputs y textarea */
+input[type="number"],
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 0.6rem;
+  margin-top: 0.3rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+textarea {
+  resize: none;
+}
+
+/* Botones */
+button {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0.2rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #2563eb;
+}
+
+button:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+/* Historial */
+ul {
+  list-style: none;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem;
+  margin-bottom: 0.5rem;
+  background: #f1f5f9;
+  border-radius: 5px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Contenedor para la parte izquierda (fecha + nombre + contraseña) */
+li .info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  overflow: hidden;
+}
+
+li .info .date {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 0.2rem;
+}
+
+li .info .label {
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+  color: #1f2937;
+  word-break: break-word;
+}
+
+li .info .pwd {
+  font-family: monospace;
+  word-break: break-all;
+}
+
+/* Botones del historial */
+li .actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+li .actions button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #374151;
+  padding: 0.3rem;
+}
+
+li .actions button:hover {
+  color: #ef4444;
+}
+
